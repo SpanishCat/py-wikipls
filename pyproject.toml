@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wikipy-python"
+version = "0.0.1"
+authors = [
+  { name="Yonathan Katz", email="yoni.gimi@gmail.com" },
+]
+description = "A wikipedia API"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/SpanishCat/wikipy-python"
+Issues = "https://github.com/SpanishCat/wikipy-python/issues"
