@@ -6,5 +6,8 @@ Still early development, not releasing any versions yet.
 This version of the package is written in Python. I plan to eventually make a copy of this one written in Rust (using PyO3 and maturin).
 Why Rust? It's an exercise for me, and it will be way faster and less error-prone
 
-# Languages
-Currently supports only English Wikipedia. More languages are planned in the future.
+# Plans
+- Support for more languages (Currently supports only English Wikipedia.
+- Dictionary
+- Citations
+- Possibly change package name to WikiAnaly or something else
