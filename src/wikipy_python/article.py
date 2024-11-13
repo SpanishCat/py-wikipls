@@ -1,23 +1,8 @@
 # -*- coding: hebrew -*-
-from typing import Final as Const
-
 from .utils import *
 
-# region Config
-# Output
-OUT_FORMAT: Const = "json"
-OUT_DIR: Const = "out/"
-START_DATE: Const = "20231001"
-
-# Misc
+# Config
 TEST_DATE = date(2024, 11, 1)
-articles = (
-    ("Hamas", "en"),
-    ("Palestinian_Islamic_Jihad", "en"),
-    ("חמאס", "he"),
-    ("הג'יהאד_האסלאמי_הפלסטיני", "he")
-)
-# endregion
 
 
 class Article:

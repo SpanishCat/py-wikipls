@@ -1,13 +1,12 @@
-from datetime import date
-import urllib.parse
-import urllib.request
-import urllib.error
-import json
-
 import requests
+import json
+import urllib.parse
+
+from datetime import date
+
 
 LANG = "en"
-HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64"}
+HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64"} # todo Check wiki's docs and change headers
 
 
 def to_timestamp(date_: date):
@@ -27,21 +26,6 @@ def get_views(name: str, date_: str | date, lang=LANG):
     response = response_for(url)
 
     return response["items"][0]["views"]
-
-    # try:
-    #     response = urllib.request.urlopen(url).read()
-    #     print(response)
-    #
-    # except urllib.error.HTTPError as err:
-    #     print(err)
-    #     if 400 in err:
-    #         raise AttributeError(f"One of the arguments is invalid. Original error: {err}")
-    #
-    # except urllib.error.URLError:
-    #     raise ConnectionError("Failed to get views: No internet connection")
-    #
-    # else:
-    #     return json.loads(response)["items"][0]["views"]
 
 
 def get_title(name: str) -> str | None:
@@ -106,19 +90,3 @@ def response_for(url: str) -> dict | None:
     else:
         result = json.loads(response.text)
         print(f"New error: {response.status_code}, {result['title']}: {result['detail']}")
-
-
-# def get_views(name, lang, start_date, end_date):
-#     if type(start_date) != str:
-#         print(f"Start date is not string. Instead it's: {type(start_date)}")
-#     if type(end_date) != str:
-#         print(f"End date is not string. Instead it's: {type(start_date)}")
-#
-#     if type(start_date) == date:
-#         start_date = to_timestamp(start_date)
-#     if type(end_date) == date:
-#         end_date = to_timestamp(end_date)
-#
-#     return u"https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/" \
-#            u"{}.wikipedia.org/all-access/all-agents/{}/daily/{}/{}" \
-#         .format(lang.lower(), urllib.parse.quote(name), start_date, end_date)
