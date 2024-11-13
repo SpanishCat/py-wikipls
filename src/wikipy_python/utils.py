@@ -28,15 +28,6 @@ def get_views(name: str, date_: str | date, lang=LANG):
     return response["items"][0]["views"]
 
 
-def get_title(name: str) -> str | None:
-    response = response_for(f"https://en.wikipedia.org/api/rest_v1/page/title/{name}")
-
-    if response:
-        return response["items"][0]["title"]
-    else:
-        return None
-
-
 def get_html(name: str) -> str | None:
     response = requests.get(f"https://en.wikipedia.org/api/rest_v1/page/html/{name}")
 
@@ -51,7 +42,7 @@ def get_summary(name: str) -> str | None:
         return response["extract"]
 
 
-def get_media(name: str) -> tuple | None:
+def get_media(name: str) -> tuple[dict, ...] | None:
     response = response_for(f"https://en.wikipedia.org/api/rest_v1/page/media-list/{name}")
 
     if response:
@@ -75,6 +66,11 @@ def get_pdf(name: str):
         return response.content
 
 
+def get_page_data(name: str):
+    response = response_for(f"https://api.wikimedia.org/core/v1/wikipedia/en/page/{name}/bare")
+    return response
+
+
 def response_for(url: str) -> dict | None:
 
     response = requests.get(url, headers=HEADERS)
@@ -86,7 +82,10 @@ def response_for(url: str) -> dict | None:
         raise AttributeError(f"One or more of the arguments given is invalid. "
                              f"\n{result['title']}: {result['detail']}")
     elif response.status_code == 404:
-        raise Exception(f"No page was found. \n{result['title']}: {result['detail']}")
+        if 'title' in result and 'detail' in result:
+            raise Exception(f"No page was found. \n{result['title']}: {result['detail']}")
+        elif 'messageTranslations' in result and 'en' in result['messageTranslations']:
+            raise Exception(result["messageTranslations"]["en"])
     else:
         result = json.loads(response.text)
         print(f"New error: {response.status_code}, {result['title']}: {result['detail']}")
