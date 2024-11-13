@@ -1,4 +1,6 @@
 # -*- coding: hebrew -*-
+from typing import Any
+
 from .utils import *
 
 # Config
@@ -10,7 +12,7 @@ class Article:
         """
         :param name: Case-sensitive
         """
-        self.details = get_page_data(name)
+        self.details: dict[str, Any] = get_page_data(name)
 
         # Map details to class
         self.id: int = self.details["id"]
@@ -33,7 +35,6 @@ class Article:
         # todo Revisions
 
 
-
 class Page:
     """
     The difference between a wikipy.Page and a wikipy.Article:
@@ -49,7 +50,7 @@ class Page:
         self.date: date = date_
         self.lang: str = lang
 
-        self.details = get_page_data(article.key)
+        self.details: dict[str, Any] = get_page_data(article.key)
 
         # Map details to class
         self.id: int = self.details["id"]
@@ -97,7 +98,7 @@ class Page:
         return self.memory["pdf_code"]
 
     @property
-    def data(self) -> dict:
+    def data(self) -> dict[str, Any]:
         if "data" not in self.memory:
             self.memory["data"]: dict = get_page_data(self.name)
         return self.memory["data"]
