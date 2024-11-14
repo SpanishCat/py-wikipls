@@ -1,5 +1,5 @@
 # What is this?
-wikipy-python is a Python package meant to easily scrape data out of Wikipedia (maybe more of the Wikimedia in the future), using the REST API.
+wikipls is a Python package meant to easily scrape data out of Wikipedia (maybe more of the Wikimedia in the future), using the REST API.
 Still early development, not releasing any versions yet.
 
 # Versions
