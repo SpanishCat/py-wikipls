@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: py-wikipls
+Version: 0.0.1a1
+Summary: A package for requesting data from Wikipedia using the REST API.
+Author-email: Yonathan Katz <yoni.gimi@gmail.com>
+Project-URL: Homepage, https://github.com/SpanishCat/py-wikipls
+Project-URL: Issues, https://github.com/SpanishCat/py-wikipls/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown

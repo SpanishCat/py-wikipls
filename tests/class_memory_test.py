@@ -1,4 +1,4 @@
-import src.wiki_pls as wikipy
+import src.wikipls as wikipy
 from time import perf_counter
 
 page_key = "Faded_(Alan_Walker_song)"

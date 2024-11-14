@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "py-wiki-pls"
-version = "0.0.1"
+name = "py-wikipls"
+version = "0.0.1a1"
 authors = [
   { name="Yonathan Katz", email="yoni.gimi@gmail.com" },
 ]
@@ -18,5 +18,5 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/SpanishCat/py-wiki-pls"
-Issues = "https://github.com/SpanishCat/py-wiki-pls/issues"
+Homepage = "https://github.com/SpanishCat/py-wikipls"
+Issues = "https://github.com/SpanishCat/py-wikipls/issues"

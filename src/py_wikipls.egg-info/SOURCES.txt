@@ -1,0 +1,9 @@
+pyproject.toml
+src/py_wikipls.egg-info/PKG-INFO
+src/py_wikipls.egg-info/SOURCES.txt
+src/py_wikipls.egg-info/dependency_links.txt
+src/py_wikipls.egg-info/top_level.txt
+src/wikipls/__init__.py
+src/wikipls/article.py
+src/wikipls/utils.py
+tests/test1.py

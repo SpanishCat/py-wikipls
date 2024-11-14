@@ -1,4 +1,4 @@
-from src.wiki_pls import *
+from src.wikipls import *
 
 a = Article("Faded_(Alan_Walker_song)")
 

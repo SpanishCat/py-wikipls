@@ -1,4 +1,4 @@
-from src.wiki_pls import *
+from src.wikipls import *
 
 a = Article("Pumped_Up_Kicks")
 print(f"{a.details=}")
