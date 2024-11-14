@@ -1,8 +1,8 @@
-from src.wikipy_python import *
+from src.wiki_pls import *
 
 a = Article("Faded_(Alan_Walker_song)")
 
-print(a.get_page(TEST_DATE).data)
+print(a.title)
 # print(a.id)
 # print(a.get_page(TEST_DATE).id)
 # print(a.get_page(date.today()).id)
