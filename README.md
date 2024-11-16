@@ -1,5 +1,5 @@
 # What is this?
-Wikipls is a Python package meant to easily scrape data out of Wikipedia (maybe more of the Wikimedia in the future), using the REST API.
+Wikipls is a Python package meant to easily scrape data out of Wikipedia (maybe more of the Wikimedia in the future), using its REST API.
 This package is still in early development, but it has basic functionality all set.
 
 # Why does it exist?
@@ -9,7 +9,11 @@ So essentially I made these functions and packaged them so that you (and I) won'
 While I'm at it I made them more intuitive and easy to use without needing to figure out how this API even works.
 
 # Installation
-To install use: `pip install py_wikipls`
+To install use:\
+`pip install py_wikipls`
+
+Then in your code add:\
+`import wikipls`
 
 # How to use
 I haven't made any documentation page yet, so for now the below will have to do.\
@@ -19,11 +23,11 @@ If anything is unclear don't hesitate to open an issue in [Issues](https://githu
   Many functions in this package require the name of the Wiki page you want to check in a URL-friendly format.
   The REST documentation refers to that as a the "key" of an article.
   For example: 
-  - The article titled "Water" is: "Water"
-  - The article titled "Faded (Alan Walker song)" is: "Faded_(Alan_Walker_song)"
-  - The Article titled "Georgia (U.S. state)" is: "Georgia_(U.S._state)"
+  - The key of the article titled "Water" is: "Water"
+  - The key of the article titled "Faded (Alan Walker song)" is: "Faded_(Alan_Walker_song)"
+  - The key of the Article titled "Georgia (U.S. state)" is: "Georgia_(U.S._state)"
 
-  That key is what you enter in the *name* parameter of functions.
+  That key is what you enter in the *name* parameter of functions. **The key is case-sensitive.**
 
   To get the key of an article you can:
   1. Take a look at the url of the article.\
@@ -39,12 +43,13 @@ If anything is unclear don't hesitate to open an issue in [Issues](https://githu
   ### `get_views(name: str, date: str | datetime.date, lang: str = LANG) -> int`
   Returns the number of times people visited an article on a given date.
 
-  The date given might can be either a datetime.date object or a string formatted yyyymmdd (So March 31th 2024 will be "20240331").
+  The date given can be either a datetime.date object or a string formatted *yyyymmdd* (So *March 31th 2024* will be *"20240331"*).
 
   `>>> get_views("Faded_(Alan_Walker_song)", "20240331")`\
   `1144`
   
 The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
+
   
   ### `get_html(name: str) -> str`
   Returns the html of the page as a string. 
@@ -55,6 +60,7 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
 
   This example returns the beginning of the html of the "Faded" page.
 
+
   ### `get_summary(name: str) -> str`
   Returns a summary of the page.
 
@@ -63,13 +69,15 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
 
   This examples returns the first 120 letters of the summary of the Faded page
 
+
   ### `get_media(name: str) -> tuple[dict, ...]`
   Returns all media present in the article, each media file represented as a JSON.
 
-`get_media("Faded_(Alan_Walker_song)")[0]`\
+`>>> get_media("Faded_(Alan_Walker_song)")[0]`\
   `{'title': 'File:Alan_Walker_-_Faded.png', 'leadImage': False, 'section_id': 0, 'type': 'image', 'showInGallery': True, 'srcset': [{'src': '//upload.wikimedia.org/wikipedia/en/thumb/d/da/Alan_Walker_-_Faded.png/220px-Alan_Walker_-_Faded.png', 'scale': '1x'}, {'src': '//upload.wikimedia.org/wikipedia/en/d/da/Alan_Walker_-_Faded.png', 'scale': '1.5x'}, {'src': '//upload.wikimedia.org/wikipedia/en/d/da/Alan_Walker_-_Faded.png', 'scale': '2x'}]}`
 
   This example returns the first media file in the Faded article, which is a PNG image.
+
 
   ### `get_pdf(name: str) -> bytes`
   Returns the PDF version of the page in byte-form.
@@ -79,6 +87,7 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
 
   This example imports the Faded page in PDF form as a new file named "faded_wiki.pdf".
 
+
   ### `get_page_data(name: str) -> dict`
   Returns a few more details about the article in JSON form
 
@@ -86,6 +95,7 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
   `{'id': 49031279, 'key': 'Faded_(Alan_Walker_song)', 'title': 'Faded (Alan Walker song)', 'latest': {'id': 1254652602, 'timestamp': '2024-11-01T00:46:48Z'}, 'content_model': 'wikitext', 'license': {'url': 'https://creativecommons.org/licenses/by-sa/4.0/deed.en', 'title': 'Creative Commons Attribution-Share Alike 4.0'}, 'html_url': 'https://en.wikipedia.org/w/rest.php/v1/page/Faded%20%28Alan%20Walker%20song%29/html'}
 `
   This example gives us the page id, key, title, license and latest revision to the Faded article, in JSON form.
+
 
   ### `to_timestamp(date: datetime.date) -> str`
   Converts a datetime.date object to a URL-friendly string format (yyyymmdd)
@@ -96,12 +106,58 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
 
   This example converts the date of March 31th 2024 to URL-friendly string form.
 
-# Bug reports
-This package is in early development and I'm looking for community feedback on bugs.\
-If you encounter a problem, please report it in [Issues](https://github.com/SpanishCat/py-wikipls/issues).
+
+  ## Class objects  
+  If you intend on repeatedly getting info about some page, it is preferred that you make an object for that page.\
+  This is for reasons of performance as well as readability and organization.
+  
+  ### `wikipls.Article(name: str)`
+  An "Article" is a wikipedia article in all of its versions, revisions and languages.
+
+  #### Properties
+  `.id` (int): Article ID. Doesn't change across revisions.\
+  `.title` (str): Article title.\
+  `.key` (str): Article key (URL-friendly name).\
+  `.content_model` (str): Type of wiki project this article is a part of (e.g. "wikitext", "wikionary").\
+  `.license` (dict): Details about the copyright license of the article.\
+  `.latest` (dict): Details about the latest revision done to the article.\
+  `.html_url` (str): URL to an html version of the current revision of the article.\
+  `.details` (dict[str, Any]): All the above properties in JSON form.\
+  
+  `.get_page(date: datetime.date, lang: str = "en")` (wikipls.Page): Get a Page object of this article, from a specified date and in a specified translation.
+
+  #### Example properties
+  -- TODO
+
+  
+  ### `wikipls.Page(article: Article, date: datetime.date)`
+  A "Page" is a version of an article in a specific date and a specific language, a.k.a a "revision".
+
+  #### Properties
+  `.from_article` (Article): The article of the page.\
+  `.name` (str): The key of the page (URL-friendly name).\
+  `.date` (datetime.date): The date of the page.\
+  `.lang` (str): The language of the page as an ISO 639 code (e.g. "en" for English).\
+  `.id` (int): Article ID.\
+  `.title` (str): Page title.\
+  `.key` (str): The key of the page (URL-friendly name), same as `.name` (I'll remove one of them).\
+  `.content_model` (str): Type of wiki project this page is a part of (e.g. "wikitext", "wikionary").\
+  `.license` (dict): Details about the copyright license of the page.\
+  `.latest` (dict): Details about the latest revision done to the article.\
+  `.html_url` (str): URL to an html version of the page.\
+  `.views` (int): Number of vists this page has received during its specified date.\
+  `.html` (str): Page HTML.\
+  `.summary` (str): Summary of the page.\
+  `.media` (tuple[dict, ...]): All media files in the page represented as JSONs.\
+  `.as_pdf` (bytes): The PDF version of the page in bytes-code.\
+  `.data` (dict[str, Any]): General details about the page in JSON format.
+
+  #### Example properties
+  -- TODO
+
 
 # What does the name mean?
-Wiki = Wikipedia
+Wiki = Wikipedia\
 Pls = Please, because you make requests
 
 # Versions
@@ -113,3 +169,7 @@ Why Rust? It's an exercise for me, and it will be way faster and less error-pron
 - Support for more languages (Currently supports only English Wikipedia)
 - Dictionary
 - Citations
+  
+# Bug reports
+This package is in early development and I'm looking for community feedback on bugs.\
+If you encounter a problem, please report it in [Issues](https://github.com/SpanishCat/py-wikipls/issues).
