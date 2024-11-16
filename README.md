@@ -10,7 +10,7 @@ While I'm at it I made them more intuitive and easy to use without needing to fi
 
 # Installation
 To install use:\
-`pip install py_wikipls`
+`pip install py-wikipls`
 
 Then in your code add:\
 `import wikipls`
