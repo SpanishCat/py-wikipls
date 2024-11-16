@@ -4,31 +4,31 @@ import requests
 import json
 import urllib.parse
 
-from datetime import date
+import datetime
 
 LANG = "en"
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64"}  # todo Check wiki's docs and change headers
 
 
-def to_timestamp(date_: date) -> str:
-    return date_.strftime("%Y%m%d")
+def to_timestamp(date: datetime.date) -> str:
+    return date.strftime("%Y%m%d")
 
 
 @overload
-def get_views(name: str, date_: date, lang: str = LANG) -> int: ...
+def get_views(name: str, date: datetime.date, lang: str = LANG) -> int: ...
 @overload
-def get_views(name: str, date_: str, lang: str = LANG) -> int: ...
+def get_views(name: str, date: str, lang: str = LANG) -> int: ...
 
 
-def get_views(name: str, date_: str | date, lang: str = LANG) -> int:
-    if isinstance(date_, date):
-        date_ = to_timestamp(date_)
-    elif not isinstance(date_, str):
+def get_views(name: str, date: str | datetime.date, lang: str = LANG) -> int:
+    if isinstance(date, datetime.date):
+        date = to_timestamp(date)
+    elif not isinstance(date, str):
         raise AttributeError("date_ must be a string or a datetime.date object")
 
     url = u"https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/" \
           u"{}.wikipedia.org/all-access/all-agents/{}/daily/{}/{}" \
-        .format(lang.lower(), urllib.parse.quote(name), date_, date_)
+        .format(lang.lower(), urllib.parse.quote(name), date, date)
 
     response = response_for(url)
 

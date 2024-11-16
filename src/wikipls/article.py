@@ -4,7 +4,7 @@ from typing import Any
 from .utils import *
 
 # Config
-TEST_DATE = date(2024, 11, 1)
+TEST_DATE = datetime.date(2024, 11, 1)
 
 
 class Article:
@@ -29,8 +29,8 @@ class Article:
     def __eq__(self, other):
         return self.id == other.id and self.key == other.key
 
-    def get_page(self, date_: date, lang: str = "en"):
-        return Page(self, date_, lang)
+    def get_page(self, date: datetime.date, lang: str = "en"):
+        return Page(self, date, lang)
 
         # todo Revisions
 
@@ -44,10 +44,10 @@ class Page:
 
     memory: dict = {}
 
-    def __init__(self, article: Article, date_: date, lang="en"):
+    def __init__(self, article: Article, date: datetime.date, lang="en"):
         self.from_article: Article = article
         self.name = self.from_article.key
-        self.date: date = date_
+        self.date: datetime.date = date
         self.lang: str = lang
 
         self.details: dict[str, Any] = get_page_data(article.key)
@@ -80,10 +80,10 @@ class Page:
         return self.memory["html"]
 
     @property
-    def summery(self) -> str:
-        if "summery" not in self.memory:
-            self.memory["summery"]: str = get_summary(self.name)
-        return self.memory["summery"]
+    def summary(self) -> str:
+        if "summary" not in self.memory:
+            self.memory["summary"]: str = get_summary(self.name)
+        return self.memory["summary"]
 
     @property
     def media(self) -> tuple[dict, ...]:
