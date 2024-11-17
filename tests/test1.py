@@ -1,15 +1,11 @@
 from src.wikipls import *
 
-a = Article("Faded_(Alan_Walker_song)")
+a = Article("Jamiroquai")
 p = a.get_page(TEST_DATE)
 
-print(p.content_model)
-#
-# print(a.title)
+print(f"{p.media}\n")
+images = get_all_images(p.media, strict=False)
+print(len(images))
 
-# print(a.id)
-# print(a.get_page(TEST_DATE).id)
-# print(a.get_page(date.today()).id)
-
-# print(get_views("Water", TEST_DATE))
-# print(get_views("Water", "20241101"))
+with open("media_download_test.png", 'wb') as f:
+    f.write(images[1])

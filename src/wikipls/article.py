@@ -88,7 +88,7 @@ class Page:
     @property
     def media(self) -> tuple[dict, ...]:
         if "media" not in self.memory:
-            self.memory["media"]: tuple[dict, ...] = get_media(self.name)
+            self.memory["media"]: tuple[dict, ...] = get_media_details(self.name)
         return self.memory["media"]
 
     @property
