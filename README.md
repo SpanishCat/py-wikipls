@@ -170,7 +170,9 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
   `.summary` (str): Summary of the page.\
   `.media` (tuple[dict, ...]): All media files in the page represented as JSONs.\
   `.as_pdf` (bytes): The PDF version of the page in bytes-code.\
-  `.data` (dict[str, Any]): General details about the page in JSON format.
+  `.data` (dict[str, Any]): General details about the page in JSON format.\
+  `.article_details` (dict): Details related to the article the page is derived from.\
+  `.page_details` (dict): Details related to the current revision of the page.\
 
   #### Example properties
   -- TODO
