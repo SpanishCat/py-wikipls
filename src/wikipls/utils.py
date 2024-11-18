@@ -153,10 +153,7 @@ def get_all_images(input: str | Iterable[dict[str, ...]], strict: bool = True) -
     else:
         details = tuple(media for media in details if media["type"] == "image")
 
-    [print(image) for image in details]
     all_images = tuple(get_image(image) for image in details)
-    print()
-    [print(image[:200]) for image in all_images]
     return all_images
 
 
@@ -176,16 +173,16 @@ def get_pdf(name: str) -> bytes:
 
 
 @overload
-def get_page_data(name: str) -> dict[str, ...]: ...
+def get_page_data(name: str, lang: str = LANG) -> dict[str, ...]: ...
 @overload
-def get_page_data(name: str, date: str | datetime.date) -> dict[str, ...]: ...
+def get_page_data(name: str, date: str | datetime.date, lang: str = LANG) -> dict[str, ...]: ...
 @overload
-def get_page_data(id: int) -> dict[str, ...]: ...
+def get_page_data(id: int, lang: str = LANG) -> dict[str, ...]: ...
 
 
 def get_page_data(*args, lang: str = LANG) -> dict[str, ...]:
     # Validate arguments
-    # You should read it as the rules for valid input (and avoid the 'not's in the beginning)
+    # You should read it as the rules for valid input (and avoid the "not"s in the beginning)
     if not (len(args) == 1 or len(args) == 2):
         raise AttributeError(f"Expected 1 or 2 arguments, got {len(args)}")
     elif not (type(args[0]) == str or type(args[0]) == int):
@@ -202,9 +199,6 @@ def get_page_data(*args, lang: str = LANG) -> dict[str, ...]:
     else:  # By name
         name = args[0]
 
-        print(f"{name = }")
-        print(f"{is_date = }")
-
         if is_date:
             date = args[1]
             id = id_of_page(name, date)
@@ -212,11 +206,8 @@ def get_page_data(*args, lang: str = LANG) -> dict[str, ...]:
             id = id_of_page(name)
 
     revision_res = response_for(f"https://{lang}.wikipedia.org/w/rest.php/v1/revision/{id}/bare")
-
     revision_res.pop("page")
     revision_res.pop("user")
-    print(revision_res)
-
     return revision_res
 
 
@@ -230,14 +221,11 @@ def get_article_data(identifier: str | int, lang: str = LANG) -> dict[str, ...]:
         # Get article name using ID
         id_details = response_for(f"http://en.wikipedia.org/w/api.php",
                                   params={"action": "query", "pageids": identifier, "format": "json"})
-        print(f"Article: For ID {identifier} - {id_details['query']['pages'][str(identifier)] = }")
 
         if "title" in id_details["query"]["pages"][str(identifier)]:
             name = id_details["query"]["pages"][str(identifier)]["title"]
         else:
             name = name_of_page(identifier)
-
-        print(f"Article: {name = }")
 
     else:
         name = identifier
@@ -267,7 +255,7 @@ def get_revision_data(id: int) -> dict[str, ...]: ...
 
 def get_revision_data(*args, lang: str = LANG) -> dict[str, ...]:
     # Validate arguments
-    # You should read it as the rules for valid input (and avoid the 'not's in the beginning)
+    # You should read it as the rules for valid input (and avoid the "not"s in the beginning)
     if not (len(args) == 1 or len(args) == 2):
         raise AttributeError(f"Expected 1 or 2 arguments, got {len(args)}")
     elif not (type(args[0]) == str or type(args[0]) == int):
@@ -328,5 +316,3 @@ def response_for(url: str, params: dict | None = None) -> dict | None:
     else:
         result = json.loads(response.text)
         print(f"New error: {response.status_code}, {result['title']}: {result['detail']}")
-
-

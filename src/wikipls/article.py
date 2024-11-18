@@ -13,7 +13,6 @@ class Article:
         :param name: Case-sensitive
         """
         self.details: dict[str, Any] = get_article_data(name)
-        print(f"{self.details=}")
 
         # Map details to class
         self.name: str = self.details["title"]
@@ -72,29 +71,16 @@ class Page:
             raise AttributeError(f"Unexpected arguments. Args: {args}")
 
         using: str = "details" if len(args) == 2 else "id"
-        # if len(args) == 1:
-        #     id = args[0]
-        #     using = "id"
-        # elif len(args) == 2:
-        #     article, date = args
-        #     using = "details"
-
         identifier = args[0]
 
         # Get details
-
-        print(f"{identifier = }")
-
         if using == "details":
             date = args[1]
-            self.article_details: dict[str, Any] = get_article_data(identifier)
-            self.page_details: dict[str, Any] = get_page_data(identifier, date)
+            self.article_details: dict[str, Any] = get_article_data(identifier, lang=lang)
+            self.page_details: dict[str, Any] = get_page_data(identifier, date, lang=lang)
         else:  # using ID
-            self.article_details: dict[str, Any] = get_article_data(identifier)
-            self.page_details: dict[str, Any] = get_page_data(identifier)
-
-        print(f"{self.article_details=}")
-        print(f"{self.page_details=}")
+            self.article_details: dict[str, Any] = get_article_data(identifier, lang=lang)
+            self.page_details: dict[str, Any] = get_page_data(identifier, lang=lang)
 
         # self.title: Article = self.details["title"] # todo If got from Article object
 
