@@ -138,9 +138,9 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
   An "Article" is a wikipedia article in all of its versions, revisions and languages.
 
   #### Properties
-  `.id` (int): Article ID. Doesn't change across revisions.\
-  `.title` (str): Article title.\
+  `.name` (str): Article title.\
   `.key` (str): Article key (URL-friendly name).\
+  `.id` (int): Article ID. Doesn't change across revisions.\
   `.content_model` (str): Type of wiki project this article is a part of (e.g. "wikitext", "wikionary").\
   `.license` (dict): Details about the copyright license of the article.\
   `.latest` (dict): Details about the latest revision done to the article.\
@@ -157,17 +157,14 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
   A "Page" is a version of an article in a specific date and a specific language, a.k.a a "revision".
 
   #### Properties
-  `.from_article` (Article): The article of the page.\
-  `.name` (str): The key of the page (URL-friendly name).\
+  `.name` (str): Page title.\
+  `.key` (str): The key of the page (URL-friendly name).).\
+  `.article_id` (int): ID of the article this page is derived from.\
+  `.revision_id` (int): ID of the current revision of the article.\
   `.date` (datetime.date): The date of the page.\
   `.lang` (str): The language of the page as an ISO 639 code (e.g. "en" for English).\
-  `.id` (int): Article ID.\
-  `.title` (str): Page title.\
-  `.key` (str): The key of the page (URL-friendly name), same as `.name` (I'll remove one of them).\
   `.content_model` (str): Type of wiki project this page is a part of (e.g. "wikitext", "wikionary").\
   `.license` (dict): Details about the copyright license of the page.\
-  `.latest` (dict): Details about the latest revision done to the article.\
-  `.html_url` (str): URL to an html version of the page.\
   `.views` (int): Number of vists this page has received during its specified date.\
   `.html` (str): Page HTML.\
   `.summary` (str): Summary of the page.\
@@ -188,7 +185,6 @@ This version of the package is written in Python. I plan to eventually make a co
 Why Rust? It's an exercise for me, and it will be way faster and less error-prone
 
 # Plans
-- Support for revisions (i.e. the ability to get an older version of an article)
 - Support for more languages (Currently supports only English Wikipedia)
 - Dictionary
 - Citations
