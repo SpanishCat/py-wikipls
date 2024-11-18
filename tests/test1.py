@@ -1,11 +1,8 @@
 from src.wikipls import *
 
-a = Article("Jamiroquai")
-p = a.get_page(TEST_DATE)
+a = Article("Faded_(Alan_Walker_song)")
+p = a.get_page(datetime.date(2024, 3, 31))
 
-print(f"{p.media}\n")
-images = get_all_images(p.media, strict=False)
-print(len(images))
+print(p)
 
-with open("media_download_test.png", 'wb') as f:
-    f.write(images[1])
+# print(get_page_data("Faded_(Alan_Walker_song)", TEST_DATE))
