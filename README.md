@@ -17,7 +17,8 @@ Then in your code add:\
 
 # How to use
 I haven't made any documentation page yet, so for now the below will have to do.\
-If anything is unclear don't hesitate to open an issue in [Issues](https://github.com/SpanishCat/py-wikipls/issues).
+If anything is unclear don't hesitate to open an issue in [Issues](https://github.com/SpanishCat/py-wikipls/issues).\
+Updated for version: 0.0.1a4
 
   ## Key
   Many functions in this package require the name of the Wiki page you want to check in a URL-friendly format.
@@ -70,14 +71,25 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
   This examples returns the first 120 letters of the summary of the Faded page
 
 
-  ### `get_media(name: str) -> tuple[dict, ...]`
+  ### `get_media_details(name: str) -> tuple[dict, ...]`
   Returns all media present in the article, each media file represented as a JSON.
 
-`>>> get_media("Faded_(Alan_Walker_song)")[0]`\
+`>>> get_media_details("Faded_(Alan_Walker_song)")[0]`\
   `{'title': 'File:Alan_Walker_-_Faded.png', 'leadImage': False, 'section_id': 0, 'type': 'image', 'showInGallery': True, 'srcset': [{'src': '//upload.wikimedia.org/wikipedia/en/thumb/d/da/Alan_Walker_-_Faded.png/220px-Alan_Walker_-_Faded.png', 'scale': '1x'}, {'src': '//upload.wikimedia.org/wikipedia/en/d/da/Alan_Walker_-_Faded.png', 'scale': '1.5x'}, {'src': '//upload.wikimedia.org/wikipedia/en/d/da/Alan_Walker_-_Faded.png', 'scale': '2x'}]}`
 
   This example returns the first media file in the Faded article, which is a PNG image.
 
+  ### `get_image(details: dict[str, ...]) -> bytes`
+  Retrives the actual byte-code of an image on a an article, using a JSON representing the image.
+  You can get that JSON using `get_media_details()`.
+
+  `>>> get_image({'title': 'File:Alan_Walker_-_Faded.png', 'leadImage': False, 'section_id': 0, 'type': 'image', 'showInGallery': True, 'srcset': [{'src': '//upload.wikimedia.org/wikipedia/en/thumb/d/da/Alan_Walker_-_Faded.png/220px-Alan_Walker_-_Faded.png', 'scale': '1x'}, {'src': '//upload.wikimedia.org/wikipedia/en/d/da/Alan_Walker_-_Faded.png', 'scale': '1.5x'}, {'src': '//upload.wikimedia.org/wikipedia/en/d/da/Alan_Walker_-_Faded.png', 'scale': '2x'}]})`\
+  `b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x01,\x00\x00\x01,\x08\x03\x00\x00\x00N\xa3~G\x00\x00\x03\x00PLTE\xff\xff\xff\x01\x01\x01\xfe\xfd\xfe'`
+
+  This examples returns the first bytes of the image we got in the `get_media_details()` example.
+
+  ### `get_all_images(input: str | Iterable[dict[str, ...]], strict: bool = True) -> tuple[bytes]`
+  Returns all images of an article or a provided list of image-JSONs, in bytes form.
 
   ### `get_pdf(name: str) -> bytes`
   Returns the PDF version of the page in byte-form.
@@ -88,17 +100,16 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
   This example imports the Faded page in PDF form as a new file named "faded_wiki.pdf".
 
 
-  ### `get_page_data(name: str) -> dict`
-  Returns a few more details about the article in JSON form
+  ### `get_page_data(name: str, date: str | datetime.date) -> dict`
+  Returns details about the latest revision to the page in JSON form.\
+  If date is provided, returns the latest revision details as of that date.
 
-  `>>> get_page_data("Faded_(Alan_Walker_song)")`\
-  `{'id': 49031279, 'key': 'Faded_(Alan_Walker_song)', 'title': 'Faded (Alan Walker song)', 'latest': {'id': 1254652602, 'timestamp': '2024-11-01T00:46:48Z'}, 'content_model': 'wikitext', 'license': {'url': 'https://creativecommons.org/licenses/by-sa/4.0/deed.en', 'title': 'Creative Commons Attribution-Share Alike 4.0'}, 'html_url': 'https://en.wikipedia.org/w/rest.php/v1/page/Faded%20%28Alan%20Walker%20song%29/html'}
-`
-  This example gives us the page id, key, title, license and latest revision to the Faded article, in JSON form.
-
+  ### `get_article_data(identifier: str | int, lang: str = LANG) -> dict[str, ...]`
+  Returns details about an article in JSON form.\
+  Identifier can be either the article's name or its ID.
 
   ### `to_timestamp(date: datetime.date) -> str`
-  Converts a datetime.date object to a URL-friendly string format (yyyymmdd)
+  Converts a datetime.date object or a string in format yyyy-mm-ddThh:mm:ssZ to a URL-friendly string format (yyyymmdd)
 
   `>>> date = datetime.date(2024, 3, 31)`\
   `>>> to_timestamp(date)`\
@@ -106,6 +117,18 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
 
   This example converts the date of March 31th 2024 to URL-friendly string form.
 
+  ### `from_timestamp(timestamp: str) -> datetime.date`
+  Converts a timestamp to a datetime.date object.\
+  The timestamp is a string which is written in one of the following formats:
+  - yyyymmdd
+  - yyyy-mm-ddThh:mm:ssZ
+
+  ### `id_of_page(name: str, date: str | datetime.date, lang: str = LANG) -> int`
+  Returns an id of a page, given a name.\
+  Date argument is optional: If date is provided, returns the ID of latest revision as of that date.
+
+  ### `name_of_page(id: int, lang=LANG) -> str`
+  Returns the title (not key!) of an article given its ID.
 
   ## Class objects  
   If you intend on repeatedly getting info about some page, it is preferred that you make an object for that page.\
