@@ -18,7 +18,7 @@ Then in your code add:\
 # How to use
 I haven't made any documentation page yet, so for now the below will have to do.\
 If anything is unclear don't hesitate to open an issue in [Issues](https://github.com/SpanishCat/py-wikipls/issues).\
-Updated for version: 0.0.1a5
+Updated for version: 0.0.1a6
 
   ## Key
   Many functions in this package require the name of the Wiki page you want to check in a URL-friendly format.
