@@ -1,35 +1,42 @@
 import requests
 import json
 import datetime
+import wikipls.consts as consts
 
 from typing import overload
 
-from .consts import *
+from wikipls import RevisionId, ArticleId
 
 
 def to_timestamp(date: datetime.date | str) -> str:
+    # From yyyymmdd
     if type(date) == datetime.date:
         return date.strftime("%Y%m%d")
-    else:  # Convert from format yyyy-mm-ddThh:mm:ssZ
+
+    # From yyyy-mm-ddThh:mm:ssZ
+    else:
         return date.split('T')[0].replace('-', '')
 
 
 def from_timestamp(timestamp: str) -> datetime.date:
+    # From yyyy-mm-ddThh:mm:ssZ
     if "T" in timestamp:
         date_only: str = timestamp.split('T')[0]
         date_info: tuple[int] = tuple(int(info) for info in date_only.split('-'))
         return datetime.date(date_info[0], date_info[1], date_info[2])
+
+    # From yyyymmdd
     else:
         return datetime.date(int(timestamp[:5]), int(timestamp[5:7]), int(timestamp[7:9]))
 
 
 @overload
-def id_of_page(key: str, lang: str = LANG) -> int: ...
+def id_of_page(key: str, lang: str = consts.LANG) -> RevisionId: ...
 @overload
-def id_of_page(key: str, date: str | datetime.date, lang: str = LANG) -> int: ...
+def id_of_page(key: str, date: str | datetime.date, lang: str = consts.LANG) -> RevisionId: ...
 
 
-def id_of_page(*args, lang: str = LANG):
+def id_of_page(*args, lang: str = consts.LANG) -> RevisionId:
     # Validate input
     if len(args) != 1 and len(args) != 2:
         raise AttributeError("Expected 1 or 2 arguments")
@@ -68,7 +75,7 @@ def id_of_page(*args, lang: str = LANG):
         return response["id"]
 
 
-def name_of_page(id: int, lang=LANG) -> str:
+def name_of_page(id: ArticleId | RevisionId, lang=consts.LANG) -> str:
     id_details = response_for(f"http://{lang}.wikipedia.org/w/api.php",
                               params={"action": "query", "pageids": id, "format": "json"})
 
@@ -80,7 +87,7 @@ def name_of_page(id: int, lang=LANG) -> str:
 
 
 def response_for(url: str, params: dict | None = None) -> dict | None:
-    response = requests.get(url, headers=HEADERS, params=params)
+    response = requests.get(url, headers=consts.HEADERS, params=params)
     result = json.loads(response.text)
 
     # Handle response errors

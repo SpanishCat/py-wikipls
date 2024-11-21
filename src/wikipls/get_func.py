@@ -2,6 +2,7 @@ import urllib.parse
 
 from typing import Iterable
 
+from .util_classes import ArticleId, RevisionId
 from .util_func import *
 
 
@@ -35,16 +36,16 @@ def get_pdf(key: str) -> bytes:
 
 
 @overload
-def get_views(key: str, date: datetime.date, lang: str = LANG) -> int: ...
+def get_views(key: str, date: datetime.date, lang: str = consts.LANG) -> int: ...
 @overload
-def get_views(key: str, date: str, lang: str = LANG) -> int: ...
+def get_views(key: str, date: str, lang: str = consts.LANG) -> int: ...
 
 
-def get_views(key: str, date: str | datetime.date, lang: str = LANG) -> int:
+def get_views(key: str, date: str | datetime.date, lang: str = consts.LANG) -> int:
     if isinstance(date, datetime.date):
         date = to_timestamp(date)
     elif not isinstance(date, str):
-        raise AttributeError("date_ must be a string or a datetime.date object")
+        raise AttributeError("date must be a string or a datetime.date object")
 
     url = u"https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/" \
           u"{}.wikipedia.org/all-access/all-agents/{}/daily/{}/{}" \
@@ -65,7 +66,7 @@ def get_media_details(key: str) -> tuple[dict, ...]:
 
 def get_image(details: dict[str, ...]) -> bytes:
     src_url = details["srcset"][-1]["src"]
-    response = requests.get(f"https:{src_url}", headers=HEADERS)
+    response = requests.get(f"https:{src_url}", headers=consts.HEADERS)
     return response.content
 
 
@@ -97,20 +98,20 @@ def get_all_images(image_info: str | Iterable[dict[str, ...]], strict: bool = Tr
 
 # region data
 @overload
-def get_page_data(key: str, lang: str = LANG) -> dict[str, ...]: ...
+def get_page_data(key: str, lang: str = consts.LANG) -> dict[str, ...]: ...
 @overload
-def get_page_data(key: str, date: str | datetime.date, lang: str = LANG) -> dict[str, ...]: ...
+def get_page_data(key: str, date: str | datetime.date, lang: str = consts.LANG) -> dict[str, ...]: ...
 @overload
-def get_page_data(id: int, lang: str = LANG) -> dict[str, ...]: ...
+def get_page_data(id: RevisionId, lang: str = consts.LANG) -> dict[str, ...]: ...
 
 
-def get_page_data(*args, lang: str = LANG) -> dict[str, ...]:
+def get_page_data(*args, lang: str = consts.LANG) -> dict[str, ...]:
     # Validate arguments
     # You should read it as the rules for valid input (and avoid the "not"s in the beginning)
     if not (len(args) == 1 or len(args) == 2):
         raise AttributeError(f"Expected 1 or 2 arguments, got {len(args)}")
-    elif not (type(args[0]) == str or type(args[0]) == int):
-        raise AttributeError(f"key argument must be string or int. Got type {type(args[0])} instead")
+    elif not (type(args[0]) == str or type(args[0]) == RevisionId):
+        raise AttributeError(f"key argument must be string or RevisionId. Got type {type(args[0])} instead")
     elif len(args) == 2 and not (type(args[1]) == datetime.date or type(args[1]) == str):
         raise AttributeError(f"date argument must be either string or datetime.date")
 
@@ -135,7 +136,7 @@ def get_page_data(*args, lang: str = LANG) -> dict[str, ...]:
     return revision_res
 
 
-def get_article_data(identifier: str | int, lang: str = LANG) -> dict[str, ...]:
+def get_article_data(identifier: str | ArticleId, lang: str = consts.LANG) -> dict[str, ...]:
     if type(identifier) == str:
         by = "key"
     else:
@@ -145,6 +146,8 @@ def get_article_data(identifier: str | int, lang: str = LANG) -> dict[str, ...]:
         # Get article key using ID
         id_details = response_for(f"http://en.wikipedia.org/w/api.php",
                                   params={"action": "query", "pageids": identifier, "format": "json"})
+        print(f"{identifier = }")
+        print(f"{id_details = }")
 
         if "title" in id_details["query"]["pages"][str(identifier)]:
             key = id_details["query"]["pages"][str(identifier)]["title"]
@@ -174,15 +177,15 @@ def get_revision_data(key: str) -> dict[str, ...]: ...
 @overload
 def get_revision_data(key: str, date: str | datetime.date) -> dict[str, ...]: ...
 @overload
-def get_revision_data(id: int) -> dict[str, ...]: ...
+def get_revision_data(id: RevisionId) -> dict[str, ...]: ...
 
 
-def get_revision_data(*args, lang: str = LANG) -> dict[str, ...]:
+def get_revision_data(*args, lang: str = consts.LANG) -> dict[str, ...]:
     # Validate arguments
     # You should read it as the rules for valid input (and avoid the "not"s in the beginning)
     if not (len(args) == 1 or len(args) == 2):
         raise AttributeError(f"Expected 1 or 2 arguments, got {len(args)}")
-    elif not (type(args[0]) == str or type(args[0]) == int):
+    elif not (type(args[0]) == str or type(args[0]) == RevisionId):
         raise AttributeError(f"key argument must be string or int. Got type {type(args[0])} instead")
     elif len(args) == 2 and not (type(args[1]) == datetime.date or type(args[1]) == str):
         raise AttributeError(f"date argument must be either string or datetime.date")
