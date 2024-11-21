@@ -5,42 +5,42 @@ from typing import Iterable
 from .util_func import *
 
 
-def get_summary(name: str) -> str:
-    response = response_for(f"https://en.wikipedia.org/api/rest_v1/page/summary/{name}")
+def get_summary(key: str) -> str:
+    response = response_for(f"https://en.wikipedia.org/api/rest_v1/page/summary/{key}")
 
     if response:
         return response["extract"]
 
 
-def get_html(name: str) -> str:
-    response = requests.get(f"https://en.wikipedia.org/api/rest_v1/page/html/{name}")
+def get_html(key: str) -> str:
+    response = requests.get(f"https://en.wikipedia.org/api/rest_v1/page/html/{key}")
 
     if response.status_code == 200:
         return response.content.decode("utf-8")
 
 
-def get_segments(name: str) -> str:
+def get_segments(key: str) -> str:
     # todo Add strict=False option that'll raise an error if response is None
-    response = response_for(f"https://en.wikipedia.org/api/rest_v1/page/segments/{name}")
+    response = response_for(f"https://en.wikipedia.org/api/rest_v1/page/segments/{key}")
 
     if response:
         return response["segmentedContent"]
 
 
-def get_pdf(name: str) -> bytes:
-    response = requests.get(f"https://en.wikipedia.org/api/rest_v1/page/pdf/{name}")
+def get_pdf(key: str) -> bytes:
+    response = requests.get(f"https://en.wikipedia.org/api/rest_v1/page/pdf/{key}")
 
     if response.status_code == 200:
         return response.content
 
 
 @overload
-def get_views(name: str, date: datetime.date, lang: str = LANG) -> int: ...
+def get_views(key: str, date: datetime.date, lang: str = LANG) -> int: ...
 @overload
-def get_views(name: str, date: str, lang: str = LANG) -> int: ...
+def get_views(key: str, date: str, lang: str = LANG) -> int: ...
 
 
-def get_views(name: str, date: str | datetime.date, lang: str = LANG) -> int:
+def get_views(key: str, date: str | datetime.date, lang: str = LANG) -> int:
     if isinstance(date, datetime.date):
         date = to_timestamp(date)
     elif not isinstance(date, str):
@@ -48,7 +48,7 @@ def get_views(name: str, date: str | datetime.date, lang: str = LANG) -> int:
 
     url = u"https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/" \
           u"{}.wikipedia.org/all-access/all-agents/{}/daily/{}/{}" \
-        .format(lang.lower(), urllib.parse.quote(name), date, date)
+        .format(lang.lower(), urllib.parse.quote(key), date, date)
 
     response = response_for(url)
 
@@ -56,8 +56,8 @@ def get_views(name: str, date: str | datetime.date, lang: str = LANG) -> int:
 
 
 # region media
-def get_media_details(name: str) -> tuple[dict, ...]:
-    response = response_for(f"https://en.wikipedia.org/api/rest_v1/page/media-list/{name}")
+def get_media_details(key: str) -> tuple[dict, ...]:
+    response = response_for(f"https://en.wikipedia.org/api/rest_v1/page/media-list/{key}")
 
     if response:
         return tuple(response["items"])
@@ -70,7 +70,7 @@ def get_image(details: dict[str, ...]) -> bytes:
 
 
 @overload
-def get_all_images(name: str, strict: bool = False) -> tuple[bytes]: ...
+def get_all_images(key: str, strict: bool = False) -> tuple[bytes]: ...
 @overload
 def get_all_images(details: Iterable[dict[str, ...]], strict: bool = False) -> tuple[bytes]: ...
 
@@ -97,9 +97,9 @@ def get_all_images(image_info: str | Iterable[dict[str, ...]], strict: bool = Tr
 
 # region data
 @overload
-def get_page_data(name: str, lang: str = LANG) -> dict[str, ...]: ...
+def get_page_data(key: str, lang: str = LANG) -> dict[str, ...]: ...
 @overload
-def get_page_data(name: str, date: str | datetime.date, lang: str = LANG) -> dict[str, ...]: ...
+def get_page_data(key: str, date: str | datetime.date, lang: str = LANG) -> dict[str, ...]: ...
 @overload
 def get_page_data(id: int, lang: str = LANG) -> dict[str, ...]: ...
 
@@ -110,24 +110,24 @@ def get_page_data(*args, lang: str = LANG) -> dict[str, ...]:
     if not (len(args) == 1 or len(args) == 2):
         raise AttributeError(f"Expected 1 or 2 arguments, got {len(args)}")
     elif not (type(args[0]) == str or type(args[0]) == int):
-        raise AttributeError(f"name argument must be string or int. Got type {type(args[0])} instead")
+        raise AttributeError(f"key argument must be string or int. Got type {type(args[0])} instead")
     elif len(args) == 2 and not (type(args[1]) == datetime.date or type(args[1]) == str):
         raise AttributeError(f"date argument must be either string or datetime.date")
 
     is_date: bool = len(args) == 2
-    by: str = "name" if type(args[0]) == str else "id"
+    by: str = "key" if type(args[0]) == str else "id"
 
     if by == "id":
         id = args[0]
 
-    else:  # By name
-        name = args[0]
+    else:  # By key
+        key = args[0]
 
         if is_date:
             date = args[1]
-            id = id_of_page(name, date)
+            id = id_of_page(key, date)
         else:
-            id = id_of_page(name)
+            id = id_of_page(key)
 
     revision_res = response_for(f"https://{lang}.wikipedia.org/w/rest.php/v1/revision/{id}/bare")
     revision_res.pop("page")
@@ -137,24 +137,24 @@ def get_page_data(*args, lang: str = LANG) -> dict[str, ...]:
 
 def get_article_data(identifier: str | int, lang: str = LANG) -> dict[str, ...]:
     if type(identifier) == str:
-        by = "name"
+        by = "key"
     else:
         by = "id"
 
     if by == "id":
-        # Get article name using ID
+        # Get article key using ID
         id_details = response_for(f"http://en.wikipedia.org/w/api.php",
                                   params={"action": "query", "pageids": identifier, "format": "json"})
 
         if "title" in id_details["query"]["pages"][str(identifier)]:
-            name = id_details["query"]["pages"][str(identifier)]["title"]
+            key = id_details["query"]["pages"][str(identifier)]["title"]
         else:
-            name = name_of_page(identifier)
+            key = name_of_page(identifier)
 
     else:
-        name = identifier
+        key = identifier
 
-    response = response_for(f"https://{lang}.wikipedia.org/w/rest.php/v1/page/{name}/bare")
+    response = response_for(f"https://{lang}.wikipedia.org/w/rest.php/v1/page/{key}/bare")
 
     out_details: dict[str, ...] = {
         "title": response["title"],
@@ -170,9 +170,9 @@ def get_article_data(identifier: str | int, lang: str = LANG) -> dict[str, ...]:
 
 
 @overload
-def get_revision_data(name: str) -> dict[str, ...]: ...
+def get_revision_data(key: str) -> dict[str, ...]: ...
 @overload
-def get_revision_data(name: str, date: str | datetime.date) -> dict[str, ...]: ...
+def get_revision_data(key: str, date: str | datetime.date) -> dict[str, ...]: ...
 @overload
 def get_revision_data(id: int) -> dict[str, ...]: ...
 
@@ -183,12 +183,12 @@ def get_revision_data(*args, lang: str = LANG) -> dict[str, ...]:
     if not (len(args) == 1 or len(args) == 2):
         raise AttributeError(f"Expected 1 or 2 arguments, got {len(args)}")
     elif not (type(args[0]) == str or type(args[0]) == int):
-        raise AttributeError(f"name argument must be string or int. Got type {type(args[0])} instead")
+        raise AttributeError(f"key argument must be string or int. Got type {type(args[0])} instead")
     elif len(args) == 2 and not (type(args[1]) == datetime.date or type(args[1]) == str):
         raise AttributeError(f"date argument must be either string or datetime.date")
 
     if type(args[0]) == str:
-        by = "name"
+        by = "key"
     else:
         by = "id"
 
@@ -201,15 +201,15 @@ def get_revision_data(*args, lang: str = LANG) -> dict[str, ...]:
     if by == "id":
         id = args[0]
 
-    else:   # By name
-        name = args[0]
+    else:   # By key
+        key = args[0]
 
         if is_date:
             date = args[1]
-            id = id_of_page(name, date)
+            id = id_of_page(key, date)
 
         else:
-            id = id_of_page(name)
+            id = id_of_page(key)
 
     response = response_for(f"https://{lang}.wikipedia.org/w/rest.php/v1/revision/{id}/bare")
     return response

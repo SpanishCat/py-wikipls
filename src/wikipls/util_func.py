@@ -24,9 +24,9 @@ def from_timestamp(timestamp: str) -> datetime.date:
 
 
 @overload
-def id_of_page(name: str, lang: str = LANG) -> int: ...
+def id_of_page(key: str, lang: str = LANG) -> int: ...
 @overload
-def id_of_page(name: str, date: str | datetime.date, lang: str = LANG) -> int: ...
+def id_of_page(key: str, date: str | datetime.date, lang: str = LANG) -> int: ...
 
 
 def id_of_page(*args, lang: str = LANG):
@@ -34,14 +34,14 @@ def id_of_page(*args, lang: str = LANG):
     if len(args) != 1 and len(args) != 2:
         raise AttributeError("Expected 1 or 2 arguments")
     elif type(args[0]) != str:
-        raise AttributeError("name argument must be a string")
+        raise AttributeError("key argument must be a string")
     elif len(args) == 2 and (type(args[1]) != str and type(args[1]) != datetime.date):
         raise AttributeError("date argument must be a string or a datetime.date object")
     elif type(lang) != str:
         raise AttributeError("lang key-argument must be a string")
 
     # Set-up arguments
-    name = args[0]
+    key = args[0]
     is_date: bool = len(args) == 2
 
     # Get ID from args
@@ -51,7 +51,7 @@ def id_of_page(*args, lang: str = LANG):
         if type(date) == datetime.date:
             date = to_timestamp(date)
 
-        url = f"https://{lang}.wikipedia.org/w/rest.php/v1/page/{name}/history"
+        url = f"https://{lang}.wikipedia.org/w/rest.php/v1/page/{key}/history"
 
         response = response_for(url)["revisions"]
 
@@ -63,7 +63,7 @@ def id_of_page(*args, lang: str = LANG):
                 return revision["id"]
 
     else:
-        response = response_for(f"https://api.wikimedia.org/core/v1/wikipedia/{lang}/page/{name}/bare")
+        response = response_for(f"https://api.wikimedia.org/core/v1/wikipedia/{lang}/page/{key}/bare")
 
         return response["id"]
 

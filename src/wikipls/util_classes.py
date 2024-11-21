@@ -16,10 +16,6 @@ class Id(int):
 
 
 @dataclass
-class ArticleId(Id):
-    pass
-
-
+class ArticleId(Id): pass
 @dataclass
-class RevisionId(Id):
-    pass
+class RevisionId(Id): pass

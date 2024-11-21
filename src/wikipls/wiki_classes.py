@@ -5,14 +5,14 @@ from .get_func import *
 
 
 class Article:
-    def __init__(self, name: str):
+    def __init__(self, key: str):
         """
-        :param name: Case-sensitive
+        :param key: Case-sensitive
         """
-        self.details: dict[str, Any] = get_article_data(name)
+        self.details: dict[str, Any] = get_article_data(key)
 
         # Map details to class
-        self.name: str = self.details["title"]
+        self.title: str = self.details["title"]
         self.key: str = self.details["key"]
         self.id: str = self.details["id"]
         self.content_model: str = self.details["content_model"]
@@ -21,7 +21,7 @@ class Article:
         self.html_url: str = self.details["html_url"]
 
     def __repr__(self):
-        return f"Article({self.name}, {self.id})"
+        return f"Article({self.title}, {self.id})"
 
     def __eq__(self, other):
         return self.id == other.revision_id and self.key == other.key
@@ -53,7 +53,7 @@ class Page:
 
     memory: dict = {}
     @overload
-    def __init__(self, name: str, date: datetime.date, lang="en"): ...
+    def __init__(self, key: str, date: datetime.date, lang="en"): ...
     @overload
     def __init__(self, page_id: int): ...
 
@@ -82,7 +82,7 @@ class Page:
         # self.title: Article = self.details["title"] # todo If got from Article object
 
         # Map details to class
-        self.name: str = self.article_details["title"]
+        self.title: str = self.article_details["title"]
         self.key: str = self.article_details["key"]
         self.article_id: int = self.article_details["id"]
         self.lang: str = self.article_details["html_url"].removeprefix("https://")[:2]
@@ -94,7 +94,7 @@ class Page:
         # todo Add self.html_url
 
     def __repr__(self):
-        return f"Page({self.name}, {self.date}, {self.article_id})"
+        return f"Page({self.title}, {self.date}, {self.article_id})"
 
     def __eq__(self, other):
         return self.article_id == other.revision_id and self.key == other.key
