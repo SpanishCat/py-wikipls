@@ -1,8 +1,9 @@
-from datetime import date
 from typing import Final
 
+import datetime
+
 LANG: Final = "en"
-TEST_DATE: Final = date(2024, 11, 1)
+TEST_DATE: Final = datetime.date(2024, 11, 1)
 
 # HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64"}  # todo Check wiki's docs and change headers
 HEADERS: Final = {
