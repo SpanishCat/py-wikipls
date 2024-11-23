@@ -37,10 +37,10 @@ class Article:
 
     def get_page(self, *args, lang: str = consts.LANG):
         if len(args) == 0:
-            return Page(self.latest["id"], lang=lang)
+            return Page(self.latest["id"], lang=lang, from_article=self)
 
         elif len(args) == 1 and type(args[0]) == datetime.date:
-            return Page(self.key, args[0], lang=lang)
+            return Page(self.key, args[0], lang=lang, from_article=self)
 
         else:
             raise AttributeError("Unexpected arguments")
@@ -57,11 +57,11 @@ class Page:
 
     memory: dict = {}
     @overload
-    def __init__(self, key: str, date: datetime.date, lang=consts.LANG): ...
+    def __init__(self, key: str, date: datetime.date, lang: str = consts.LANG, from_article: Article = None): ...
     @overload
-    def __init__(self, page_id: RevisionId): ...
+    def __init__(self, page_id: RevisionId, lang: str = consts.LANG, from_article: Article = None): ...
 
-    def __init__(self, *args, lang=consts.LANG):
+    def __init__(self, *args, lang=consts.LANG, from_article: Article = None):
 
         # Validate input
         if len(args) == 0:
@@ -78,12 +78,12 @@ class Page:
         if using == "details":
             date = args[1]
             self.article_details: dict[str, Any] = get_article_data(identifier, lang=lang)
-            self.page_details: dict[str, Any] = get_page_data(identifier, date, lang=lang)
+            self.page_details: dict[str, Any] = old_get_page_data(identifier, date, lang=lang)
         else:  # using ID
             self.article_details: dict[str, Any] = get_article_data(identifier, lang=lang)
-            self.page_details: dict[str, Any] = get_page_data(identifier, lang=lang)
+            self.page_details: dict[str, Any] = old_get_page_data(identifier, lang=lang)
 
-        # self.title: Article = self.details["title"] # todo If got from Article object
+        self.from_article: Article | None = from_article # todo If got from Article object
 
         # Map details to class
         self.title: str = self.article_details["title"]
@@ -136,6 +136,6 @@ class Page:
     @property
     def data(self) -> dict[str, Any]:
         if "data" not in self.memory:
-            self.memory["data"]: dict = get_page_data(self.key)
+            self.memory["data"]: dict = old_get_page_data(self.key)
         return self.memory["data"]
 

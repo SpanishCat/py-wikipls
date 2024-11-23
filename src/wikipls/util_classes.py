@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from .util_func import name_of_page
+import wikipls.util_func as util_func
 
 
 @dataclass
@@ -18,7 +18,7 @@ class Id(int):
         return self.id
 
     def to_name(self):
-        return name_of_page(self.id)
+        return util_func.key_of_page(self)
 
 
 @dataclass(repr=False)

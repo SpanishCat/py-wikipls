@@ -2,7 +2,6 @@ import urllib.parse
 
 from typing import Iterable
 
-from .util_classes import ArticleId, RevisionId
 from .util_func import *
 
 
@@ -98,14 +97,14 @@ def get_all_images(image_info: str | Iterable[dict[str, ...]], strict: bool = Tr
 
 # region data
 @overload
-def get_page_data(key: str, lang: str = consts.LANG) -> dict[str, ...]: ...
+def old_get_page_data(key: str, lang: str = consts.LANG) -> dict[str, ...]: ...
 @overload
-def get_page_data(key: str, date: str | datetime.date, lang: str = consts.LANG) -> dict[str, ...]: ...
+def old_get_page_data(key: str, date: str | datetime.date, lang: str = consts.LANG) -> dict[str, ...]: ...
 @overload
-def get_page_data(id: RevisionId, lang: str = consts.LANG) -> dict[str, ...]: ...
+def old_get_page_data(id: RevisionId, lang: str = consts.LANG) -> dict[str, ...]: ...
 
 
-def get_page_data(*args, lang: str = consts.LANG) -> dict[str, ...]:
+def old_get_page_data(*args, lang: str = consts.LANG) -> dict[str, ...]:
     # Validate arguments
     # You should read it as the rules for valid input (and avoid the "not"s in the beginning)
     if not (len(args) == 1 or len(args) == 2):
@@ -136,6 +135,56 @@ def get_page_data(*args, lang: str = consts.LANG) -> dict[str, ...]:
     return revision_res
 
 
+@overload
+def get_page_data(key: str, lang: str = consts.LANG) -> dict[str, ...]: ...
+@overload
+def get_page_data(key: str, date: str | datetime.date, lang: str = consts.LANG) -> dict[str, ...]: ...
+@overload
+def get_page_data(id: RevisionId, lang: str = consts.LANG) -> dict[str, ...]: ...
+
+
+def get_page_data(*args, lang: str = consts.LANG) -> dict[str, ...]:
+    # Validate arguments
+    # You should read it as the rules for valid input (and avoid the "not"s in the beginning)
+    if not (len(args) == 1 or len(args) == 2):
+        raise AttributeError(f"Expected 1 or 2 arguments, got {len(args)}")
+    elif not (type(args[0]) == str or type(args[0]) == RevisionId):
+        raise AttributeError(f"key argument must be string or RevisionId. Got type {type(args[0])} instead")
+    elif len(args) == 2 and not (type(args[1]) == datetime.date or type(args[1]) == str):
+        raise AttributeError(f"date argument must be either string or datetime.date")
+
+    is_date: bool = len(args) == 2
+    by: str = "key" if type(args[0]) == str else "id"
+
+    if by == "id":
+        id: RevisionId = args[0]
+        key: str = key_of_page(id)
+
+    else:  # By key
+        key: str = args[0]
+
+        if is_date:
+            date: datetime.date = args[1]
+            id: RevisionId = id_of_page(key, date)
+        else:
+            id: RevisionId = id_of_page(key)
+
+    # revision_res = requests.get(f"https://{lang}.wikipedia.org/w/index.php",
+    #                             params={"title": key, "oldid": id})
+
+    # Taken from Method 2: https://www.mediawiki.org/wiki/API:Get_the_contents_of_a_page
+    revision_res = requests.get(f"https://{lang}.wikipedia.org/w/api.php",
+                                params={"action": "parse",
+                                        "oldid": id,
+                                        "format": "json",
+                                        "prop": "text",
+                                        "formatversion": 2
+                                        })
+    print(revision_res.url)
+    # print(f"https://{lang}.wikipedia.org/w/index.php?title={key}&oldid={id}")
+    return revision_res.content # todo sort the JSON data
+
+
 def get_article_data(identifier: str | ArticleId, lang: str = consts.LANG) -> dict[str, ...]:
     if type(identifier) == str:
         by = "key"
@@ -146,13 +195,12 @@ def get_article_data(identifier: str | ArticleId, lang: str = consts.LANG) -> di
         # Get article key using ID
         id_details = response_for(f"http://en.wikipedia.org/w/api.php",
                                   params={"action": "query", "pageids": identifier, "format": "json"})
-        print(f"{identifier = }")
-        print(f"{id_details = }")
 
+        # fixme: Needs to get key not title
         if "title" in id_details["query"]["pages"][str(identifier)]:
             key = id_details["query"]["pages"][str(identifier)]["title"]
         else:
-            key = name_of_page(identifier)
+            key = key_of_page(identifier)
 
     else:
         key = identifier
