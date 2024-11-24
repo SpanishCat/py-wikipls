@@ -1,8 +1,7 @@
 # -*- coding: hebrew -*-
 from typing import Any
 
-from wikipls.func.get import *
-from wikipls.func.data import *
+from .func import *
 
 
 class Article:
