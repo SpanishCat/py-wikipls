@@ -1,12 +1,18 @@
 from src.wikipls import *
 from wikipls.consts import TEST_DATE
 
+KEY = "Ohio"
 # a = Article("Faded_(Alan_Walker_song)")
 # p = a.get_page(datetime.date(2024, 3, 31))
 #
 
-r = get_revision_data("Faded_(Alan_Walker_song)", TEST_DATE)
-print(f"{r = }")
+# p = Page(KEY, TEST_DATE)
+print(f"{id_of_page(KEY, TEST_DATE)=}")
+
+# r = get_revision_data("Faded_(Alan_Walker_song)", TEST_DATE)
+
+g = get_page_data(KEY, TEST_DATE)
+print(f"{g = }")
 
 # print(p)
 

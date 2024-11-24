@@ -1,6 +1,6 @@
-from typing import Final
-
 import datetime
+
+from typing import Final
 
 LANG: Final = "en"
 TEST_DATE: Final = datetime.date(2024, 11, 1)

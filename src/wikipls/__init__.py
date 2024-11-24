@@ -1,4 +1,4 @@
 from .wiki_obj import *
 from .type_obj import *
-from .get_func import *
-from .util_func import *
+from wikipls.func.get import *
+from wikipls.func.utils import *
