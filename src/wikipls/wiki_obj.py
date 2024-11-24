@@ -12,7 +12,7 @@ class Article:
         self.details: dict[str, Any] = get_article_data(key)
 
         # Map details to class
-        self.title: str = self.details["key"]
+        self.title: str = self.details["key"] # fixme This is a key not a title
         self.key: str = self.details["key"]
         self.id: ArticleId = ArticleId(self.details["id"])
         self.content_model: str = self.details["content_model"]
@@ -46,15 +46,12 @@ class Article:
             raise AttributeError("Unexpected arguments")
 
 
-# fixme Fix this class
 class Page:
     """
     The difference between a wikipls.Page and a wikipls.Article:
     Article - Collection of all versions of all languages of all dates for a single article. A 'collection' of Pages
     Page - One specific version of an article, in a specific date and a specific language
     """
-
-    # todo Make this accept also date: str
 
     memory: dict = {}
     @overload
@@ -270,7 +267,7 @@ class Revision:
         self.content_model: str = self.details["content_model"]
         self.comment: str = self.details["comment"]
         self.delta: int = self.details["delta"]
-        self.html_url = self.details["html_url"]
+        self.html_url: str = self.details["html_url"]
 
         self.lang: str = self.html_url.removeprefix("https://")[:2]
 
