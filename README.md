@@ -17,8 +17,8 @@ Then in your code add:\
 
 # How to use
 I haven't made any documentation page yet, so for now the below will have to do.\
-If anything is unclear don't hesitate to open an issue in [Issues](https://github.com/SpanishCat/py-wikipls/issues).\
-Updated for version: 0.0.1a6
+If anything is unclear don't hesitate to open an issue in [Issues](https://github.com/SpanishCat/py-wikipls/issues) or bring it up in [Discussions](https://github.com/SpanishCat/py-wikipls/discussions).\
+Updated for version: 0.0.1a7
 
   ## Key
   Many functions in this package require the name of the Wiki page you want to check in a URL-friendly format.
@@ -37,9 +37,22 @@ Updated for version: 0.0.1a6
   2. Take the title of the article and replace all spaces with "_", it'll probably work just fine.
   3. In the future there will be a function to get the key of a title.
 
-  ## Direct Functions
+  ## GET functions
   These functions can be used without needing to create an object. 
-  In general they all require the URL-friendly name of an article as a string.
+  
+  Many of them require the key of an article as a string,
+  and an optional a date (datetime.date) object to get results for a specific date.\
+  Otherwise they require a revision ID (RevisionId) number.\
+  Many functions are compatible with both options.
+
+  ### `get_summary(key: str, fmt: str = "text") -> str`
+  Returns a summary of the page.\
+  `fmt` can be either `"text"` or `"html"`
+
+  `>>> get_summary("Faded_(Alan_Walker_song)")[:120]`\
+  `'"Faded" is a song by Norwegian record producer and DJ Alan Walker with vocals provided by Norwegian singer Iselin Solhei'`
+
+  This examples returns the first 120 letters of the summary of the Faded page
   
   ### `get_views(name: str, date: str | datetime.date, lang: str = LANG) -> int`
   Returns the number of times people visited an article on a given date.
@@ -52,9 +65,12 @@ Updated for version: 0.0.1a6
 The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
 
   
-  ### `get_html(name: str) -> str`
-  Returns the html of the page as a string. 
+  ### `get_html(key: str, old_id: RevisionId = None) -> str`
+  Returns the HTML of the page as a string. 
   This can be later parsed using tools like BeautifulSoup.
+  
+  If an old_id value is given then the HTML will be of an older version of the page,
+  taken from the revision that has this ID.
 
   `>>> get_html("Faded_(Alan_Walker_song)")[:40]`\
   `'<!DOCTYPE html>\n<html prefix="dc: http:/'`
@@ -62,16 +78,9 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
   This example returns the beginning of the html of the "Faded" page.
 
 
-  ### `get_summary(name: str) -> str`
-  Returns a summary of the page.
-
-  `>>> get_summary("Faded_(Alan_Walker_song)")[:120]`\
-  `'"Faded" is a song by Norwegian record producer and DJ Alan Walker with vocals provided by Norwegian singer Iselin Solhei'`
-
-  This examples returns the first 120 letters of the summary of the Faded page
 
 
-  ### `get_media_details(name: str) -> tuple[dict, ...]`
+  ### `get_media_details(key: str, old_id: RevisionId = None) -> tuple[dict, ...]`
   Returns all media present in the article, each media file represented as a JSON.
 
 `>>> get_media_details("Faded_(Alan_Walker_song)")[0]`\
@@ -88,10 +97,11 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
 
   This examples returns the first bytes of the image we got in the `get_media_details()` example.
 
-  ### `get_all_images(input: str | Iterable[dict[str, ...]], strict: bool = True) -> tuple[bytes]`
+  ### `get_all_images(key: str, details: Iterable[dict[str, ...]], strict: bool = False) -> tuple[bytes]`
   Returns all images of an article or a provided list of image-JSONs, in bytes form.
+  You can only enter either a `key` or `details` value, no need for both.
 
-  ### `get_pdf(name: str) -> bytes`
+  ### `get_pdf(key: str) -> bytes`
   Returns the PDF version of the page in byte-form.
 
   `>>> with open("faded_wiki.pdf", 'wb') as f:`\
@@ -99,16 +109,40 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
 
   This example imports the Faded page in PDF form as a new file named "faded_wiki.pdf".
 
+  ---
 
-  ### `get_page_data(name: str, date: str | datetime.date) -> dict`
+  ## Data functions
+  Data functions return a dictionary containing many details about the object.
+  they can be used without needing to create an object. 
+
+  These functions require either a key with an optional date or an ID.
+
+  ### `get_article_data(identifier: str | ArticleId, lang: str = consts.LANG) -> dict[str, ...]`
+  Returns details about an article in JSON form.\
+  Identifier can be either the article's name or its ID.
+  
+  ### `get_page_data(*args, lang: str = consts.LANG) -> dict[str, ...]`
+  Returns details and the content of a page (i.e specific version of an Article).
+  
+  Arguments:
+  1. **`get_page_data(id: RevisionId)`**: Get page by using ID of revision.
+  2. **`get_page_data(key: str)`**: Get page by using its name. Since no date argument is given wikipls will return the most up-to-date page.
+  3. **`get_page_data(key: str, date: str | datetime.date)`**: Get page by using its name and a date.
+
+  ### `get_revision_data(*args, lang: str = consts.LANG) -> dict[str, ...]`
   Returns details about the latest revision to the page in JSON form.\
   If date is provided, returns the latest revision details as of that date.
 
-  ### `get_article_data(identifier: str | int, lang: str = LANG) -> dict[str, ...]`
-  Returns details about an article in JSON form.\
-  Identifier can be either the article's name or its ID.
+  Arguments:
+  1. **`get_revision_data(id: RevisionId)`**: Get revision using its ID. 
+  2. **`get_revision_data(key: str)`**: Get revision by using its name. Since no date argument is given wikipls will return the latest revision. 
+  3. **`get_revision_data(key: str, date: str | datetime.date)`**: Get revision by using its name and a date.
 
-  ### `to_timestamp(date: datetime.date) -> str`
+  ---
+  ## Utility functions
+  Functions that make life easier
+  
+  ### `to_timestamp(date: datetime.date | str) -> str`
   Converts a datetime.date object or a string in format yyyy-mm-ddThh:mm:ssZ to a URL-friendly string format (yyyymmdd)
 
   `>>> date = datetime.date(2024, 3, 31)`\
@@ -117,34 +151,56 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
 
   This example converts the date of March 31th 2024 to URL-friendly string form.
 
-  ### `from_timestamp(timestamp: str) -> datetime.date`
-  Converts a timestamp to a datetime.date object.\
+  ### `from_timestamp(timestamp: str, out_fmt: type[datetime.date] | type[datetime.datetime] = datetime.date) -> datetime.date | datetime.datetime`
+  Converts a timestamp to a datetime.date or datetime.datetime object.\
   The timestamp is a string which is written in one of the following formats:
   - yyyymmdd
   - yyyy-mm-ddThh:mm:ssZ
 
-  ### `id_of_page(name: str, date: str | datetime.date, lang: str = LANG) -> int`
-  Returns an id of a page, given a name.\
+  ### `id_of_page(*args, lang: str = consts.LANG) -> RevisionId`
+  Returns an id of a page, given a key.\
   Date argument is optional: If date is provided, returns the ID of latest revision as of that date.
 
-  ### `name_of_page(id: int, lang=LANG) -> str`
-  Returns the title (not key!) of an article given its ID.
+  Arguments:
+  1. **`id_of_page(key: str, lang: str = consts.LANG)`**: Get id using the page key. Since no date argument is given wikipls will return the ID of latest page. 
+  2. **`id_of_page(key: str, date: str | datetime.date, lang: str = consts.LANG)`**: Get id using the page key.
 
-  ## Class objects  
+  ### `key_of_page(id: ArticleId | RevisionId, lang=consts.LANG) -> str`
+  Returns the key of an article given its (or one of its revisions's) ID.
+
+  ### `response_for(url: str, params: dict = None) -> str`
+  For internal use mainly.
+  ### `json_response(url: str, params: dict = None) -> dict`
+  For interal use mainly
+
+  ---
+
+
+  ### ID classes
+  It's very easy to confuse revision IDs for article IDs and vice versa.\
+  To combat that IDs are only accepted as either of these:
+  - `ArticleId(int)`
+  - `RevisionId(int)`
+  
+  These function just like a regular `int`.
+  For example: To make a revision ID 314141, we do `RevisionId(314141)`.
+
+  ---
+
+  ## Wiki objects  
   If you intend on repeatedly getting info about some page, it is preferred that you make an object for that page.\
   This is for reasons of performance as well as readability and organization.
   
-  ### `wikipls.Article(name: str)`
+  ### `wikipls.Article(key: str)`
   An "Article" is a wikipedia article in all of its versions, revisions and languages.
 
   #### Properties
-  `.name` (str): Article title.\
   `.key` (str): Article key (URL-friendly name).\
-  `.id` (int): Article ID. Doesn't change across revisions.\
+  `.id` (ArticleId): Article ID. Doesn't change across revisions.\
   `.content_model` (str): Type of wiki project this article is a part of (e.g. "wikitext", "wikionary").\
   `.license` (dict): Details about the copyright license of the article.\
-  `.latest` (dict): Details about the latest revision done to the article.\
   `.html_url` (str): URL to an html version of the current revision of the article.\
+  `.latest` (dict): Details about the latest revision done to the article.\
   `.details` (dict[str, Any]): All the above properties in JSON form.\
   
   `.get_page(date: datetime.date, lang: str = "en")` (wikipls.Page): Get a Page object of this article, from a specified date and in a specified translation.
@@ -153,30 +209,78 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
   -- TODO
 
   
-  ### `wikipls.Page(article: Article, date: datetime.date)`
-  A "Page" is a version of an article in a specific date and a specific language, a.k.a a "revision".
+  ### `wikipls.Page(*args, lang=consts.LANG, from_article: Article = None)`
+  A "Page" is a version of an article in a specific date and a specific language.
+  
+  from_article is for pages that were created using `wikipls.Article().get_page()`. Don't worry about it:)
+
+  Arguments:
+  1. **`(key: str, date: datetime.date | str)`**
+  2. **`(page_id: RevisionId)`**
 
   #### Properties
-  `.name` (str): Page title.\
+  `.from_article` (str): Article object of origin, if there is one.\
+  `.title` (str): Page title.\
   `.key` (str): The key of the page (URL-friendly name).).\
-  `.article_id` (int): ID of the article this page is derived from.\
-  `.revision_id` (int): ID of the current revision of the article.\
+  `.raw_text` (str): Raw text of this page.\
+  `.article_id` (ArticleId): ID of the article this page is derived from.\
+  `.revision_id` (RevisionId): ID of the current revision of the article.\
   `.date` (datetime.date): The date of the page.\
   `.lang` (str): The language of the page as an ISO 639 code (e.g. "en" for English).\
   `.content_model` (str): Type of wiki project this page is a part of (e.g. "wikitext", "wikionary").\
   `.license` (dict): Details about the copyright license of the page.\
   `.views` (int): Number of vists this page has received during its specified date.\
   `.html` (str): Page HTML.\
-  `.summary` (str): Summary of the page.\
+  `.summary` (dict): Summary of the page. `.summary["html"]` is the HTML version and the `.summary["text"]` is the plain-text version.\
   `.media` (tuple[dict, ...]): All media files in the page represented as JSONs.\
   `.as_pdf` (bytes): The PDF version of the page in bytes-code.\
   `.data` (dict[str, Any]): General details about the page in JSON format.\
+  `.lint` (?)\
+  `.mobile_html` (str)\
+  `.mobile_html_offline_resources` (str)\
+  `.mobile_sections` (str)\
+  `.mobile_sections_lead` (str)\
+  `.mobile_sections_remaining` (str)\
+  `.discussion` (dict): Info about the behind-the-scenes discussion of this page.\
+  `.related` (tuple[dict]): Articles that are related to this one.\
   `.article_details` (dict): Details related to the article the page is derived from.\
-  `.page_details` (dict): Details related to the current revision of the page.\
+  `.page_details` (dict): Details related to the page.\
 
+  `.get_revision()`: Get the relevant revision of this page.
+  
   #### Example properties
   -- TODO
 
+
+  ### `Revision(*args, lang=consts.LANG)`
+  A revision is a change made to an article by the Wikipedia editors.\
+  So if you scrumble an entire paragraph of the *Moon* article then submit it to the wiki,
+  then that scrumble is a **Revision**. The scrumbled result is a **Page**, and so is the article before you scrumbled it.\
+  All of this was presumebly done in the *Moon* **Article**.
+  
+  Arguments:
+  1. **`Revision(key: str, date: datetime.date)`**
+  1. **`Revision(page_id: RevisionId)`**
+
+  #### Properties
+  `.id` (RevisionId): Revision ID.\
+  `.lang` (str): Page language code.\
+  `.datetime` (datetime.datetime): Time this revision was published on Wikipedia.\
+  `.content_model` (str): Type of wiki project this page is a part of (e.g. "wikitext", "wikionary").\
+  `.license` (dict): Details about the copyright license of the page.\
+  `.html_url` (str): URL to an html version of the current revision of the article.\
+  `.comment` (str): Comment of revision.\
+  `.user` (dict): Data about the user who published the revision.\
+  `.size` (int): \
+  `.is_minor` (bool):\
+  `.delta` (int):\
+  `.details` (dict): Details related to the current revision of the page.\
+
+  `.article_title` (str): Article title.\
+  `.article_key` (str): Article key (URL-friendly name).\
+  `.article_id` (ArticleId): Article ID. Doesn't change across revisions.\
+  
+---
 
 # What does the name mean?
 Wiki = Wikipedia\
