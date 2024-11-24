@@ -5,7 +5,7 @@ import wikipls.consts as consts
 
 from typing import overload
 
-from .util_classes import RevisionId, ArticleId
+from .type_obj import RevisionId, ArticleId
 
 
 def to_timestamp(date: datetime.date | str) -> str:
@@ -18,16 +18,27 @@ def to_timestamp(date: datetime.date | str) -> str:
         return date.split('T')[0].replace('-', '')
 
 
-def from_timestamp(timestamp: str) -> datetime.date:
+def from_timestamp(timestamp: str, out_fmt: type[datetime.date] | type[datetime.datetime] = datetime.date) \
+        -> datetime.date | datetime.datetime:
     # From yyyy-mm-ddThh:mm:ssZ
     if "T" in timestamp:
         date_only: str = timestamp.split('T')[0]
         date_info: tuple[int, ...] = tuple(int(info) for info in date_only.split('-'))
-        return datetime.date(date_info[0], date_info[1], date_info[2])
+
+        time_only: str = timestamp.split('T')[1].removesuffix('Z')
+        time_info: tuple[int, ...] = tuple(int(info) for info in time_only.split(':'))
+
+        if out_fmt == datetime.date:
+            return datetime.date(date_info[0], date_info[1], date_info[2])
+        elif out_fmt == datetime.datetime:
+            return datetime.datetime(date_info[0], date_info[1], date_info[2], time_info[0], time_info[1], time_info[2])
 
     # From yyyymmdd
     else:
-        return datetime.date(int(timestamp[:5]), int(timestamp[5:7]), int(timestamp[7:9]))
+        if out_fmt == datetime.date:
+            return datetime.date(int(timestamp[:5]), int(timestamp[5:7]), int(timestamp[7:9]))
+        elif out_fmt == datetime.datetime:
+            return datetime.datetime(int(timestamp[:5]), int(timestamp[5:7]), int(timestamp[7:9]))
 
 
 @overload
