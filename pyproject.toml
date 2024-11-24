@@ -21,3 +21,4 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/SpanishCat/py-wikipls"
 Issues = "https://github.com/SpanishCat/py-wikipls/issues"
+Sponsor = "https://github.com/sponsors/SpanishCat"
