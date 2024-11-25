@@ -124,7 +124,7 @@ class Page:
     #     return self.memory["data-parsoid"]
 
     @property
-    def lint(self):
+    def lint(self) -> list[dict]:
          if not "lint" in self.memory:
              self.memory["lint"] = get_lint(self.key, old_id=self.revision_id)
          return self.memory["lint"]
