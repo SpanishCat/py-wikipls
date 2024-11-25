@@ -1,5 +1,5 @@
 # What is this?
-Wikipls is a Python package meant to easily scrape data out of Wikipedia (maybe more of the Wikimedia in the future), using its REST API.
+Wikipls is a Python package meant to easily scrape data out of Wikipedia, using its REST API.
 This package is still in early development, but it has basic functionality all set.
 
 # Why does it exist?
@@ -53,17 +53,10 @@ Updated for version: 0.0.1a7
   `'"Faded" is a song by Norwegian record producer and DJ Alan Walker with vocals provided by Norwegian singer Iselin Solhei'`
 
   This examples returns the first 120 letters of the summary of the Faded page
-  
-  ### `get_views(name: str, date: str | datetime.date, lang: str = LANG) -> int`
-  Returns the number of times people visited an article on a given date.
 
-  The date given can be either a datetime.date object or a string formatted *yyyymmdd* (So *March 31th 2024* will be *"20240331"*).
-
-  `>>> get_views("Faded_(Alan_Walker_song)", "20240331")`\
-  `1144`
-  
-The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
-
+  ### `get_raw_text(key: str, id: RevisionId) -> str`
+  Returns the raw text of a page.\
+  **This function temporarily doesn't support date arguments. If you want the raw text of an old page, please use a revision ID**
   
   ### `get_html(key: str, old_id: RevisionId = None) -> str`
   Returns the HTML of the page as a string. 
@@ -77,8 +70,55 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
 
   This example returns the beginning of the html of the "Faded" page.
 
+  ### `get_key(key: str, old_id: RevisionId = None, lang: str = consts.LANG) -> str`
+  Returns the key (URL-friendly name) of an old page.
+  
+  ### `get_date(id: RevisionId, lang: str = consts.LANG) -> datetime.date`
+  Returns the date of a revision, given its ID.
+  
+  ### `get_lint(key: str, old_id: RevisionId = None, lang: str = consts.LANG) -> dict`
+  See https://en.wikipedia.org/api/rest_v1/#/Page%20content/get_page_lint__title___revision_.
+  
+  ### `get_mobile_html(key: str, old_id: RevisionId = None, lang: str = consts.LANG) -> str`
+  See https://en.wikipedia.org/api/rest_v1/#/Page%20content/getContentWithRevision-mobile-html.
+  
+  ### `get_mobile_html_offline_resources(key: str, old_id: RevisionId = None, lang: str = consts.LANG) -> str`
+  See https://en.wikipedia.org/api/rest_v1/#/Page%20content/get_page_mobile_html_offline_resources__title___revision_.
 
+  ### `get_mobile_sections(key: str, old_id: RevisionId = None, lang: str = consts.LANG) -> str`
+  See https://en.wikipedia.org/api/rest_v1/#/Mobile/getSectionsWithRevision.
+  
+  ### `get_mobile_sections_lead(key: str, old_id: RevisionId = None, lang: str = consts.LANG) -> str`
+  See https://en.wikipedia.org/api/rest_v1/#/Mobile/getSectionsLeadWithRevision.
+  
+  ### `get_mobile_sections_remaining(key: str, old_id: RevisionId = None, lang: str = consts.LANG) -> str`
+  See https://en.wikipedia.org/api/rest_v1/#/Mobile/getSectionsRemainingWithRevision.
+  
+  ### `get_discussion(key: str, old_id: RevisionId = None, lang: str = consts.LANG) -> dict`
+  Returns info about the discussion tab of a page.
+  
+  ### `get_related(key: str, lang: str = consts.LANG) -> tuple[dict]`
+  Returns articles that are related to the one given.
+  
+  ### `get_views(name: str, date: str | datetime.date, lang: str = LANG) -> int`
+  Returns the number of times people visited an article on a given date.
 
+  The date given can be either a datetime.date object or a string formatted *yyyymmdd* (So *March 31th 2024* will be *"20240331"*).
+
+  `>>> get_views("Faded_(Alan_Walker_song)", "20240331")`\
+  `1144`
+  
+  The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
+
+  ### `get_pdf(key: str) -> bytes`
+  Returns the PDF version of the page in byte-form.
+
+  `>>> with open("faded_wiki.pdf", 'wb') as f:`\
+  `      f.write(get_pdf("Faded_(Alan_Walker_song)"))`
+
+  This example imports the Faded page in PDF form as a new file named "faded_wiki.pdf".
+
+  ---
 
   ### `get_media_details(key: str, old_id: RevisionId = None) -> tuple[dict, ...]`
   Returns all media present in the article, each media file represented as a JSON.
@@ -101,13 +141,6 @@ The Faded page on Wikipedia was visited 1,144 on March 31st 2024.
   Returns all images of an article or a provided list of image-JSONs, in bytes form.
   You can only enter either a `key` or `details` value, no need for both.
 
-  ### `get_pdf(key: str) -> bytes`
-  Returns the PDF version of the page in byte-form.
-
-  `>>> with open("faded_wiki.pdf", 'wb') as f:`\
-  `      f.write(get_pdf("Faded_(Alan_Walker_song)"))`
-
-  This example imports the Faded page in PDF form as a new file named "faded_wiki.pdf".
 
   ---
 
