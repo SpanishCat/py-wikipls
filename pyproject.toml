@@ -5,6 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "py-wikipls"
 version = "0.0.1a7"
+dynamic = ["version"]
 authors = [
   { name="Yonathan Katz", email="yoni.gimi@gmail.com" },
 ]
