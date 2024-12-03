@@ -1,3 +1,5 @@
+README updated for version: 0.0.1a8
+
 # What is this?
 Wikipls is a Python package meant to easily scrape data out of Wikipedia, using its REST API.
 This package is still in early development, but it has basic functionality all set.
@@ -9,16 +11,21 @@ So essentially I made these functions and packaged them so that you (and I) won'
 While I'm at it I made them more intuitive and easy to use without needing to figure out how this API even works.
 
 # Installation
-To install use:\
-`pip install py-wikipls`
+The `requests` library MUST be installed before downloading wikipls.\
+This is a known issue that will be resolved as soon as possible.
 
-Then in your code add:\
-`import wikipls`
+1. Install *requests*:\
+   `pip install requests`
+
+2. Install *wikipls*:\
+  `pip install wikipls`
+
+3. Import in your code:\
+  `import wikipls`
 
 # How to use
 I haven't made any documentation page yet, so for now the below will have to do.\
 If anything is unclear don't hesitate to open an issue in [Issues](https://github.com/SpanishCat/py-wikipls/issues) or bring it up in [Discussions](https://github.com/SpanishCat/py-wikipls/discussions).\
-Updated for version: 0.0.1a7
 
   ## Key
   Many functions in this package require the name of the Wiki page you want to check in a URL-friendly format.
