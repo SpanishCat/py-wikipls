@@ -1,0 +1,4 @@
+requests<3,>=2.25.0
+idna<4,>=2.5
+urllib3<3,>=1.21.1
+cgi

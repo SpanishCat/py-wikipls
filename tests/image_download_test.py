@@ -49,7 +49,7 @@ print(time.perf_counter())
 # with open("jam.jpg", 'wb') as f:
 #     f.write(get_image("Jamiroquai"))
 #
-# print(a.title)
+# print(a.key)
 
 # print(a.id)
 # print(a.get_page(TEST_DATE).id)
