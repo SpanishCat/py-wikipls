@@ -1,4 +1,4 @@
-README updated for version: 0.0.1a8
+README updated for version: 0.0.1a9
 
 # What is this?
 Wikipls is a Python package meant to easily scrape data out of Wikipedia, using its REST API.
