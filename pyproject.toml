@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wikipls"
-version = "0.0.1.dev18"
+version = "0.0.1a8"
 description = "A package for requesting data from Wikipedia using the REST API."
 authors = ["Yonathan Katz <yoni.gimi@gmail.com>"]
 license = "LPGL-2.1-or-later"
