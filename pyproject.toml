@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "wikipls"
-version = "0.0.1a8"
+version = "0.0.1a9"
 description = "A package for requesting data from Wikipedia using the REST API."
 authors = ["Yonathan Katz <yoni.gimi@gmail.com>"]
 license = "LPGL-2.1-or-later"
 readme = "README.md"
 package-mode = true
 keywords = ["wikipedia, rest, wiki, scraping, api"]
-repository = "https://github.com/SpanishCat/py-wikipls"
+repository = "https://github.com/SpanishCat/wikipls"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Operating System :: OS Independent",
@@ -21,7 +21,7 @@ classifiers = [
 
 
 [tool.poetry.urls]
-"Issues" = "https://github.com/SpanishCat/py-wikipls/issues"
+"Issues" = "https://github.com/SpanishCat/wikipls/issues"
 "Sponsor" = "https://github.com/sponsors/SpanishCat"
 
 
